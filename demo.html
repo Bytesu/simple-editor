@@ -1,432 +1,57 @@
 <html>
 <head>
     <title>一个小型的JS在线文本编辑器</title>
-    <script language="javascript">
-        var edit;       //当前选择的文本编辑区域对象
-        var RangeType;  //对象类别
-        function start() //开始初始化编辑器-编辑区域是Iframe
-        {
-            Editor.document.designMode = "ON";
-            Editor.document.open();
-            Editor.document.write(myTextArea.value);
-            Editor.document.close();
-            fnInit()
+    <meta http-equiv="content-type" content="text/html" charset="utf-8">
+    <style>
+        body{
+            background: #fff;;
         }
-        function setFocus() {
-            Editor.focus();  //编辑器或去焦点
-        }
-        function selectRange() {
-            edit = Editor.document.selection.createRange();  //编辑器的文本选择区域
-            RangeType = Editor.document.selection.type;
-        }
-        //包装文本选定区域的执行命令
-        function execCommand(command, para) {
-            setFocus();
-            selectRange();
-            if (para == "")   //没有参数的情况
-                edit.execCommand(command)
-            else
-                edit.execCommand(command, false, arguments[1]);
-            Editor.focus();
-            if (RangeType != "Control") edit.select();
-        }
-        //获取或设置文本的格式-字体、字号
-        function doSelectC(str, el) {
-
-
-            var Index = el.selectedIndex;
-            if (Index != 0) {
-                el.selectedIndex = 0;
-                execCommand(str, el.options[Index].text);
-            }
-        }
-        //获取或设置当前选定块的格式化标签
-        function doSelectCl(str, el) {
-            var Index = el.selectedIndex;
-            if (Index != 0) {
-                el.selectedIndex = 0;
-                execCommand(str, "<" + el.options[Index].value + ">");
-            }
-        }
-        //初始化
-        function fnInit() {
-            for (i = 0; i < document.all.length; i++)
-                document.all(i).unselectable = "off";  //指定不选中任何元素
-            getSystemFonts();
-        }
-        //获取系统字体的方法
-        function getSystemFonts() {
-            var a = dlgHelper.fonts.count;
-            var fArray = new Array();
-            var oOption = document.createElement("OPTION");
-            oOption.text = "字体";
-            oOption.value = "0";
-            selectFontName.add(oOption);
-//使用DOM方法createElement将字体依次添加到复选列表中
-            for (i = 1; i < dlgHelper.fonts.count; i++) {
-                fArray[i] = dlgHelper.fonts(i);
-                var oOption = document.createElement("OPTION");
-                oOption.text = fArray[i];
-                oOption.Value = i;
-                selectFontName.add(oOption);
-            }
-        }
-        //格式化，保全script、textarea、xmp、pre和style内容
-        function formatfor(va) {
-            var t = va.replace(/\r/g, '');
-            t = t.replace(/(<(script|textarea|xmp|pre|style).*?>)([^\r]*?)(<\/\2>)/img,
-                    function () {
-                        return arguments[1] + arguments[3].replace(/\n/g, "\r") + arguments[4]
-                    })
-            t = t.replace(/\n/g, "");
-            return t
-        }
-        function fontsize(el) //改变字体的方法
-        {
-            var Index = el.selectedIndex
-            var addpre = "<font size=" + el.options[Index].value + ">"
-            if (Index > 7)addpre = "<font style='font-size:" + el.options[Index].value + "pt'>"
-            var oSel = Editor.document.selection.createRange()
-            var sBookmark = oSel.getBookmark()
-            var oSelhtml = oSel.htmlText
-            if (oSelhtml != "") {
-//定位选中内容
-                var conts = oSelhtml
-                var textLength = Editor.document.body.innerText.length
-                oSel.moveStart("character", -1 * textLength)
-                var contp = formatfor(oSel.htmlText)
-                var conta = formatfor(Editor.document.body.innerHTML)
-                var contpa = ''
-                var partC = ""
-                var partB = ""
-                var partA = ""
-                var m = 0
-                m = conta.indexOf(contp.substr(0, 3))
-                var f = contp.length
-                for (; f > 0; f--) {
-                    if (conta.substr(m, f) == contp.substr(0, f)) {
-                        contpa = contp.substr(0, f);
-                        partC = conta.substr(m + f);
-                        break
-                    }
-                }
-                var ko = contp.substr(f)
-                var kol = ko.length
-                var ty = conta.substr(m + f, kol)
-                var hu = ""
-                for (var b = 1; b < kol; b++)if (ko.substr(b) == ty.substr(0, kol - b)) {
-                    hu = ko.substr(b);
-                    contpa += hu;
-                    partC = partC.substr(kol - b);
-                    break
-                }
-                var k = contpa.length
-                cont = conts.replace(/\n/g, "")
-                var u = cont.length
-                if (cont == contpa.substr(k - u)) {
-                    partB = cont;
-                    partA = contpa.substr(0, k - u)
-                } else {
-                    for (u = cont.length; u > 0; u--) {
-                        if (cont.lastIndexOf(contpa.substr(k - u)) != -1) {
-                            partB0 = contpa.substr(k - u);
-                            partA0 = contpa.substr(0, k - u);
-                            break
-                        }
-                    }
-                    contt = formatfor(conts)
-                    if (hu != "")if (contt.substr(contt.length - kol) == ko)contt = contt.substr(0, contt.length - kol) + hu
-                    u = contt.length
-                    var youm = contpa.lastIndexOf(contt)
-                    if (youm != -1) {
-                        partB = contt;
-                        partA = contpa.substr(0, youm);
-                        partC = contpa.substr(youm + u) + partC
-                    } else {
-                        for (; u > 0; u--) {
-                            if (contt.lastIndexOf(contpa.substr(k - u)) != -1) {
-                                partB1 = contpa.substr(k - u);
-                                partA1 = contpa.substr(0, k - u);
-                                break
-                            }
-                        }
-                        if (partB1.length > partB0.length) {
-                            partB = partB1;
-                            partA = partA1
-                        } else {
-                            partB = partB0;
-                            partA = partA0
-                        }
-                    }
-                }
-                if (partB.substr(partB.length - 1) == "<") {
-                    partB = partB.substr(0, partB.length - 1);
-                    partC = "<" + partC
-                }
-                if (partB.substr(partB.length - 2) == "</") {
-                    partB = partB.substr(0, partB.length - 2);
-                    partC = "</" + partC
-                }
-//保护textarea、xmp、script和style的内容不被改变
-                var cook = [];
-                partA = partA.replace(/(<(script|textarea|xmp|style).*?>)[\s\S]*?<\/\2>/ig,
-                        function () {
-                            co = cook.length
-                            cook[co] = arguments[0];
-                            return "<cook" + co + ">"
-                        });
-                var ook = "";
-                partA = partA.replace(/(<(script|textarea|xmp|style).*?>)[\s\S]*?/i, function () {
-                    co = cook.lengthook = arguments[2]
-                    cook[co] = arguments[0];
-                    return "<cook" + co + ">";
-                })
-                if (ook != "")fd = "([sS]∗?<\/" + ook + ">)";
-                jk = newRegExp(fd, ["i"]);
-                if (jk.test(partB))jk.exec(partB);
-                co = cook.lengthcook[co] = RegExp.$1partB = partB.replace(jk, "<cook" + co + ">");
-                partB = partB.replace(/(<(script|textarea|xmp|style).∗?>)[\s§]∗?<\/\2>/ig, function () {
-                    co = cook.lengthcook[co] = arguments[0];
-                    return "<cook" + co + ">"
-                });
-                ook = "";
-                partB = partB.replace(/(<(script|textarea|xmp|style).∗?>)[\s§]∗?/i,
-                        function () {
-                            co = cook.length
-                            ook = arguments[2]
-                            cook[co] = arguments[0];
-                            return "<cook" + co + ">"
-                        });
-                if (ook != "") {
-                    fd = "(^[\\s\\S]*?<\/" + ook + ">)"
-                    jk = new RegExp(fd, ["i"])
-                    if (jk.test(partC)) {
-                        jk.exec(partC);
-                        co = cook.length;
-                        cook[co] = RegExp.$1;
-                        partC = partC.replace(jk, "<cook" + co + ">");
-                    }
-                }
-                partC = partC.replace(/(<(script|textarea|xmp|style).*?>)[\s\S]*?<\/\2>/ig,
-                        function () {
-                            co = cook.length;
-                            cook[co] = arguments[0];
-                            return "<cook" + co + ">";
-                        });
-
-//处理字体
-                var dol = [];
-                var dos = [];
-                var lon = [];
-                fd = "<FONT([^>]*?)>";
-                jk = new RegExp(fd, ["im"]);
-                while (jk.test(partB)) {
-                    ce = dol.length;
-                    jk.exec(partB);
-                    dol[ce] = RegExp;
-//                    .1
-                    partB = partB.replace(jk, "<site" + ce + ">");
-                }
-                ce = dol.length - 1;
-                for (; ce > -1; ce--) {
-                    kjc = "<site" + ce + ">";
-                    fd = kjc + '(.*?)<\/font>';
-                    jk = new RegExp(fd, ["im"]);
-                    if (jk.test(partB)) {
-                        dos[dos.length] = ce;
-                        jk.exec(partB);
-                        ko3 = kjc + RegExp;
-                        .1 + "</site" + ce + ">";
-                        partB = partB.replace(jk, ko3)
-                    } else {
-                        lon[lon.length] = ce
-                    }
-                }
-                partB = partB.replace(/<\/font>/img, "<lonf>")
-                for (var c = dos.length - 1; c > -1; c--) {
-                    uts = dol[dos[c]]
-                    if ("" == (uts.replace(/size=[0-7+]+/i, "").replace(/style=("|')FONT-SIZE: [0-9.]+.*;*("|')/im, "").replace(/[\s\n\r]+/mg, ""))) {
-                        partB = partB.replace("<site" + dos[c] + ">", "")
-                        partB = partB.replace("</site" + dos[c] + ">", "")
-                    } else {
-                        partB = partB.replace("<site" + dos[c] + ">", "<font" + uts.replace(/ size=[0-7+]+/im, "").replace(/FONT-SIZE: [0-9.]+pt/im, "").replace(/ style=("|');*("|')/im, "") + ">")
-                        partB = partB.replace("</site" + dos[c] + ">", "</font>")
-                    }
-                }
-//处理其他标签
-                var addend = ""
-                var mio = []
-                partB = partB.replace(/<([^<> ]*?) [^<>]*?style=[^<>]*?FONT-SIZE: [0-9.]+[^<>]*?>/img,
-                        function () {
-                            notv = "|select|input|option|object|"
-                            if (notv.indexOf("|" + arguments[1].toLowerCase() + "|") == -1) {
-                                op = mio.length
-                                mio[op] = arguments[0]
-                                return "<opis" + op + ">"
-                            } else {
-                                return arguments[0]
-                            }
-                        })
-                kba = ["h1", "h2", "h3", "h4", "h5", "h6", "pre", "button", "listing", "big", "small", "tt", "code", "kbd", "samp", "td", "\/td", "caption", "\/caption", "th", "\/th", "tr", "\/tr", "table", "\/table", "thead", "\/thead", "tbody", "\/tbody", "tfoot", "\/tfoot"]
-                for (b in kba) {
-                    fd = "<(" + kba[b] + ")[^<>]*?>"
-                    jk = new RegExp(fd, ["img"])
-                    partB = partB.replace(jk,
-                            function () {
-                                op = mio.length
-                                mio[op] = arguments[0]
-                                return "<opis" + op + ">"
-                            })
-                }
-//收尾工作
-                liming = []
-                partB = partB.replace(/<(opis|site|lonf)([0-9]*)>/g,
-                        function () {
-                            var op = liming.length
-                            if (arguments[1] == "opis") {
-                                liming[op] = mio[parseInt(arguments[2])]
-                            }
-                            if (arguments[1] == "site") {
-                                liming[op] = "<font" + dol[parseInt(arguments[2])] + ">"
-                            }
-                            if (arguments[1] == "lonf") {
-                                liming[op] = "</font>"
-                            }
-                            return "<duan" + op + ">"
-                        })
-                if (liming.length > 0) {
-                    partB = partB.replace(/^(.+?)(<duan0>)/m, function () {
-                        if ("" != arguments[1]) {
-                            return addpre + arguments[1] + "</font>" + arguments[2]
-                        }
-                        else {
-                            return arguments[0]
-                        }
-                    })
-                    var op = liming.length - 1
-                    for (var kc = 0; kc < op; kc++) {
-                        fd = "(<duan" + kc + ">)(.+?)(<duan" + (kc + 1) + ">)"
-                        jk = new RegExp(fd, ["m"])
-                        partB = partB.replace(jk,
-                                function () {
-                                    if ("" != arguments[2]) {
-                                        return arguments[1] + addpre + arguments[2] + "</font>" + arguments[3]
-                                    }
-                                    else {
-                                        return arguments[0]
-                                    }
-                                })
-                    }
-                    fd = "(<duan" + op + ">)(.+?)$"
-                    jk = new RegExp(fd, ["m"])
-                    partB = partB.replace(jk, function () {
-                        if ("" != arguments[2]) {
-                            return arguments[1] + addpre + arguments[2] + "</font>"
-                        }
-                        else {
-                            return arguments[0]
-                        }
-                    })
-                }
-                else {
-                    partB = addpre + partB + "</font>"
-                }
-                partB = partB.replace(/<duan([0-9]+)>/g, function () {
-                    return liming[parseInt(arguments[1])]
-                })
-                var endtemp = partA + partB + partC
-                for (vof in cook)endtemp = endtemp.replace("<cook" + vof + ">", cook[vof])
-                Editor.document.body.innerHTML = endtemp
-                var vrvd = Editor.document.selection.createRange()
-                vrvd.moveToBookmark(sBookmark)
-                vrvd.select()
-            }
-            else {
-                Editor.document.selection.createRange().pasteHTML(addpre + "</font>")
-            }
-            Editor.focus()
-            el.blur()
-            el.selectedIndex = 0
-        }
-    </script>
+    </style>
 </head>
-<body SCROLL="no" bgcolor=d0d0c8 onload="start()" leftmargin=5 topmargin=5>
-<OBJECT id=dlgHelper CLASSID="clsid:3050f819-98b5-11cf-bb82-00aa00bdce0b" width="0px" height="0px"></OBJECT>
-<select id="select1" style="height:18px" onchange="doSelectCl('FormatBlock',this);this.returnValue=false;"
+<body onload="start()" >
+<br/>
+<br/>
+<div>
+    <p href="＃">a p tag <span>a span test</span> --tes -- </p>
+    <p href="＃">a p tag</p>
+</div>
+<br/><br/>
+<select id="headersID" style="height:18px" onchange="doSelectCl('FormatBlock',this);this.returnValue=false;"
         name="select1"
         size="1">
     <option selected value="">段落样式</option>
-    <option value="P">普通
-    <option value="H1">标题一
-    <option value="H2">标题二
-    <option value="H3">标题三
-    <option value="H4">标题四
-    <option value="H5">标题五
-    <option value="H6">标题六
-    <option value="p">段落
-    <option value="dd">定义
-    <option value="dt">术语定义
-    <option value="dir">目录列表
-    <option value="menu">菜单列表
-    <option value="PRE">已编排格式
+    <option value="P">普通</option>
+    <option value="H2">标题二 </option>
+    <option value="H3">标题三</option>
+    <option value="H4">标题四</option>
+    <option value="H5">标题五</option>
 </select>
-<select style="height:18px" onchange="doSelectC('FontName',this,this.value)" name="selectFontName"></select></td>
+<select  style="height:18px" onchange="doSelectC('FontName',this,this.value)" name="selectFontName">
+    <option value="Helvetica">Helvetica</option>
+    <option value="Verdana">Verdana</option>
+</select></td>
 <select style="width:60px; height:18px;" onchange="fontsize(this)" name="selectFontSize" size="1">
     <option selected>字号</option>
-    <option value="7">一号
-    <option value="6">二号
-    <option value="5">三号
-    <option value="4">四号
-    <option value="3">五号
-    <option value="2">六号
-    <option value="1">七号
-    <option value=1>1 pt
-    <option value=2>2 pt
-    <option value=3>3 pt
-    <option value=4>4 pt
-    <option value=5>5 pt
-    <option value=6>6 pt
-    <option value=7>7 pt
-    <OPTION value=8>8 pt
-    <OPTION value=9>9 pt
-    <OPTION value=10>10 pt
     <OPTION value=11>11 pt
     <OPTION value=12>12 pt
-    <OPTION value=13>13 pt
     <OPTION value=14>14 pt
-    <OPTION value=15>15 pt
     <OPTION value=16>16 pt
-    <OPTION value=17>17 pt
     <OPTION value=18>18 pt
-    <OPTION value=19>19 pt
     <OPTION value=20>20 pt
-    <OPTION value=21>21 pt
     <OPTION value=22>22 pt
-    <OPTION value=23>23 pt
-    <OPTION value=25>25 pt
     <OPTION value=28>28 pt
-    <OPTION value=30>30 pt
-    <OPTION value=35>35 pt
     <OPTION value=40>40 pt
     <OPTION value=45>45 pt
     <OPTION value=50>50 pt
-    <OPTION value=60>60 pt
-    <OPTION value=70>70 pt
-    <OPTION value=85>85 pt
-    <OPTION value=100>100 pt
-    <OPTION value=120>120 pt
-    <OPTION value=150>150 pt
-    <option value=200>200 pt
-    <option value=250>250 pt
-    <option value=300>300 pt
-    <option value=500>500 pt
-    <option value=900>900 pt
-    <option value=2000>2000 pt
 </select>
-<IFRAME id="Editor" Name="Editor" style="WIDTH: 100%; HEIGHT: 98%;"></IFRAME>
-<textarea name=myTextArea style="display:none">
+
+<IFRAME id="Editor" Name="Editor" style="WIDTH: 100%; HEIGHT: 98%;">
+
+</IFRAME>
+<textarea name=myTextArea style="display:none" id="myTextArea">
 2D-Position 允许通过拖曳移动绝对定位的对象<br/>[2D定位只对样式设置为Position:absolute的元素有效]<br/>
 命令document.execCommand("2D-Position",false,true)能打开文档的2D定位，当容器的contentEditable标记为true时，可以拖动容器内的控件、改变控件大小、编辑控件文本内容。第3个参数设置为true时可以拖动元素，否则不能。
 </textarea>
 </body>
+<script src="index.js"></script>
 </html>
