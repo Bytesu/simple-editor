@@ -1,0 +1,29 @@
+{
+  "name": "simple-editor",
+  "version": "1.0.0",
+  "description": "simple editor",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "open test/demo.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Bytesu/simple-editor.git"
+  },
+  "keywords": [
+    "editor"
+  ],
+  "author": "bytesu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Bytesu/simple-editor/issues"
+  },
+  "homepage": "https://github.com/Bytesu/simple-editor",
+  "dependencies": {
+    "jquery": "^2.1.4",
+    "normalize": "^0.3.1"
+  }
+}
