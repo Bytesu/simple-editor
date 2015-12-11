@@ -10,6 +10,17 @@ SEditor.prototype.init = function () {
         self.selection(Editor).select(se_);
         Editor.document.execCommand("createlink", false, 'http://www.baidu.com');
     });
+    $('#list').click(function(){
+        Editor.document.execCommand("InsertOrderedList");
+    });
+    $('#ulist').click(function(){
+        Editor.document.execCommand("InsertUnorderedList");
+        //Editor.document.execCommand("InsertOrderedList");
+    });
+    document.execCommand("italic");
+    $('#b').click(function(){Editor.document.execCommand("bold");})
+    $('#italic').click(function(){Editor.document.execCommand("italic");})
+    $('#underline').click(function(){Editor.document.execCommand("underline");})
 };
 SEditor.prototype.selection = function (win_) {
     win_ = win_|| window;
